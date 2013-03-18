@@ -12,7 +12,10 @@ module.exports = function(source) {
 		var binding = fieldBindings[fieldBinding];
 		if(Array.isArray(content[fieldBinding])) {
 			content[fieldBinding].forEach(function(item) {
-				result.push("require(" + JSON.stringify(binding.replace(/\[file\]/g, "./" + item)) + ");");
+				if(typeof binding === "string")
+					result.push("require(" + JSON.stringify(binding.replace(/\[file\]/g, "./" + item)) + ");");
+				else if(binding === true)
+					result.push("require(" + JSON.stringify("./" + item) + ");");
 			});
 		}
 	});
