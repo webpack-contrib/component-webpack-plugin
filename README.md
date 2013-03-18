@@ -2,7 +2,7 @@
 
 ## Usage
 
-see an example here: [webpack/webpack/examples/component](https://github.com/webpack/webpack/tree/master/examples/component]
+see an example here: [webpack/webpack/examples/component](https://github.com/webpack/webpack/tree/master/examples/component)
 
 ``` javascript
 var ComponentPlugin = require("component-webpack-plugin");
