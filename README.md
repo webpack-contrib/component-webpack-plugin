@@ -20,12 +20,12 @@ var ComponentPlugin = require("component-webpack-plugin");
 module.exports = {
 	plugins: [
 		new ComponentPlugin({
-			// Load coffee field in component.json
-			coffee: true,
-			// This is equal to: coffee: "[file]"
+			// Load xyz field in component.json
+			xyz: true,
+			// This is equal to: xyz: "[file]"
 			
-			// Load coffee field with the coffee-loader
-			coffee: "!coffee-loader![file]",
+			// Load xyz field with the xyz-loader
+			xyz: "!xyz-loader![file]",
 			
 			// This is default:
 			// styles: "!style-loader!css-loader![file]"
