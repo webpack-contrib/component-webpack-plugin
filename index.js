@@ -6,7 +6,7 @@ var path = require("path");
 
 function ComponentPlugin(fieldBindings, lookupPaths, componentFile) {
 	this.fieldBindings = fieldBindings || {};
-	this.lookupPaths = lookupPaths || ["component"];
+	this.lookupPaths = lookupPaths || ["components"];
 	this.componentFile = componentFile || "component.json";
 	if(typeof this.fieldBindings.styles === "undefined") {
 		this.fieldBindings.styles = "!" + require.resolve("style-loader") + "!" + require.resolve("css-loader") + "![file]";
