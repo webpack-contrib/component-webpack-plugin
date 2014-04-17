@@ -18,18 +18,31 @@ ComponentPlugin.prototype.apply = function(compiler) {
 	var fieldBindings = this.fieldBindings;
 	var lookupPaths = this.lookupPaths;
 	var componentFile = this.componentFile;
-	compiler.resolvers.normal.plugin("module", function(request, callback) {
-		if(request.request.indexOf("/") >= 0) return callback();
+	compiler.resolvers.normal.plugin("module", function(request, finalCallback) {
+		if(request.request.indexOf("/") >= 0) return finalCallback();
+
+		function callback() {
+			if(finalCallback.log) {
+				finalCallback.log("resolve component " + request.request + " in " + request.path);
+				logData.forEach(finalCallback.log, finalCallback);
+			}
+			finalCallback.apply(this, arguments);
+		}
+		var logData = [];
+		function log(msg) {
+			logData.push("  " + msg);
+		}
+
 		var fs = this.fileSystem;
 
 		// 1. Find next component.json file and read it
 		var componentPath = request.path + "/";
-		var componentFileContent;
+		var componentFileContent, componentFilePath;
 		(function next() {
 			var idx = componentPath.lastIndexOf("/");
 			if(idx < 0) idx = componentPath.lastIndexOf("\\");
 			if(idx < 0) return callback();
-			var componentFilePath = componentPath.substr(0, idx + 1) + 	componentFile;
+			componentFilePath = componentPath.substr(0, idx + 1) + componentFile;
 			componentPath = componentPath.substr(0, idx);
 			fs.readFile(componentFilePath, function(err, content) {
 				if(err) return next.call(this);
@@ -67,8 +80,10 @@ ComponentPlugin.prototype.apply = function(compiler) {
 				}
 			}
 			if(!fullName) {
+				log(componentFilePath + " doesn't contain a dependency matching " + requestName);
 				return callback();
 			}
+			log(componentFilePath + " contains a dependency " + fullName);
 			findInDirectories.call(this, fullName);
 		}
 
@@ -79,7 +94,7 @@ ComponentPlugin.prototype.apply = function(compiler) {
 				var idx = componentPath.lastIndexOf("/");
 				if(idx < 0) idx = componentPath.lastIndexOf("\\");
 				if(idx < 0) return callback();
-				var componentFilePath = componentPath.substr(0, idx + 1) + 	componentFile;
+				var componentFilePath = componentPath.substr(0, idx + 1) + componentFile;
 				componentPath = componentPath.substr(0, idx);
 				fs.readFile(componentFilePath, function(err, content) {
 					if(err) return next.call(this);
@@ -94,7 +109,14 @@ ComponentPlugin.prototype.apply = function(compiler) {
 						var modulesFolderPath = this.join(componentPath, path);
 						var modulePath = this.join(modulesFolderPath, fullName.replace(/\//g, "-"));
 						fs.stat(modulePath, function(err, stat) {
-							if(err || !stat || !stat.isDirectory()) return callback();
+							if(err || !stat) {
+								log(modulePath + " doesn't exist");
+								return callback();
+							}
+							if(!stat.isDirectory()) {
+								log(modulePath + " is not a directory");
+								return callback();
+							}
 							return callback(null, {
 								path: this.join(modulePath, componentFile),
 								query: request.query,
