@@ -55,6 +55,10 @@ ComponentPlugin.prototype.apply = function(compiler) {
 			var fullName, requestName = request.request;
 			for(var i = 0; i < modules.length; i++) {
 				var name = modules[i];
+				if(name.replace("/", "-") === requestName) {
+					fullName = modules[i];
+					break;
+				}
 				var idx = name.indexOf("/");
 				if(idx >= 0) name = name.substr(idx+1);
 				if(requestName === name) {
