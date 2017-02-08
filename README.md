@@ -1,8 +1,8 @@
 # component for webpack
 
-## Usage
+**UNMAINTAINED!**
 
-see an example here: [webpack/webpack/examples/component](https://github.com/webpack/webpack/tree/master/examples/component)
+## Usage
 
 ``` javascript
 var ComponentPlugin = require("component-webpack-plugin");
